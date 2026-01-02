@@ -1,0 +1,21 @@
+{
+    "name": "paysgator/paysgator-php",
+    "description": "Paysgator API Client for PHP",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Paysgator",
+            "email": "info@paysgator.com"
+        }
+    ],
+    "require": {
+        "php": "^7.4 || ^8.0",
+        "guzzlehttp/guzzle": "^7.8"
+    },
+    "autoload": {
+        "psr-4": {
+            "Paysgator\\": "src/"
+        }
+    }
+}
