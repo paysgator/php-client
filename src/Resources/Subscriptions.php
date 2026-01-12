@@ -14,18 +14,16 @@ class Subscriptions
     }
 
     /**
-     * Update Subscription Status
+     * Update Subscription
      *
      * @param string $id
-     * @param string $action 'cancel', 'pause', 'resume'
+     * @param string $action
      * @return array
      */
     public function update($id, $action)
     {
         $response = $this->client->getHttpClient()->patch("subscriptions/{$id}", [
-            'json' => [
-                'action' => $action,
-            ],
+            'json' => ['action' => $action],
         ]);
 
         return json_decode($response->getBody()->getContents(), true);

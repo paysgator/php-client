@@ -12,9 +12,9 @@ composer require paysgator/paysgator-php
 
 ## Usage
 
-### Authentication
+### Configuration
 
-For most requests, you need to authenticate first or provide an access token.
+For most requests, you simply need to provide your API Key.
 
 ```php
 require 'vendor/autoload.php';
@@ -22,36 +22,43 @@ require 'vendor/autoload.php';
 use Paysgator\PaysgatorClient;
 
 $client = new PaysgatorClient([
-    'base_url' => 'https://paysgator.com/api/v1/', // Optional, defaults to production
-]);
-
-// Authenticate to get a new token (automatically sets it on the client)
-$response = $client->auth()->authenticate('YOUR_API_KEY', 'YOUR_WALLET_ID');
-echo "Access Token: " . $response['accessToken'];
-
-// OR initialize with an existing token
-$client = new PaysgatorClient([
-    'access_token' => 'YOUR_EXISTING_TOKEN',
+    'api_key' => 'YOUR_API_KEY',
 ]);
 ```
 
-### Payment Links
+### Create Payment
 
-Create a payment link or perform a direct charge.
+Create a payment transaction.
 
 ```php
 $paymentData = [
-    'title' => 'My Product',
     'amount' => 100,
     'currency' => 'MZN',
-    'description' => 'Payment for services',
+    'payment_methods' => ['MPESA', 'CARD'],
     'returnUrl' => 'https://mysite.com/return',
-    // ... other fields
 ];
 
 try {
-    $link = $client->paymentLinks()->create($paymentData);
-    echo "Payment Link: " . $link['url'];
+    $result = $client->payments()->create($paymentData);
+    echo "Payment Link: " . $result['data']['checkoutUrl'];
+    echo "Transaction ID: " . $result['data']['transactionId'];
+} catch (\Exception $e) {
+    echo "Error: " . $e->getMessage();
+}
+```
+
+### Confirm Payment
+
+Confirm a payment server-side.
+
+```php
+try {
+    $confirmation = $client->payments()->confirm([
+        'paymentLinkId' => 'payment_uuid',
+        'paymentMethod' => 'MPESA',
+        'payment_fields' => ['phoneNumber' => '841234567']
+    ]);
+    print_r($confirmation);
 } catch (\Exception $e) {
     echo "Error: " . $e->getMessage();
 }
@@ -64,12 +71,6 @@ Manage subscriptions.
 ```php
 // Pause a subscription
 $client->subscriptions()->update('sub_123', 'pause');
-
-// Resume
-$client->subscriptions()->update('sub_123', 'resume');
-
-// Cancel
-$client->subscriptions()->update('sub_123', 'cancel');
 ```
 
 ### Transactions

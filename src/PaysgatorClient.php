@@ -4,8 +4,7 @@ namespace Paysgator;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
-use Paysgator\Resources\Auth;
-use Paysgator\Resources\PaymentLinks;
+use Paysgator\Resources\Payments;
 use Paysgator\Resources\Subscriptions;
 use Paysgator\Resources\Transactions;
 use Paysgator\Resources\Wallet;
@@ -13,13 +12,13 @@ use Paysgator\Resources\Wallet;
 class PaysgatorClient
 {
     private $client;
-    private $accessToken;
+    private $apiKey;
     private $baseUrl = 'https://paysgator.com/api/v1/';
 
     public function __construct(array $config = [])
     {
         $this->baseUrl = $config['base_url'] ?? $this->baseUrl;
-        $this->accessToken = $config['access_token'] ?? null;
+        $this->apiKey = $config['api_key'] ?? null;
 
         $guzzleConfig = [
             'base_uri' => $this->baseUrl,
@@ -29,19 +28,18 @@ class PaysgatorClient
             ],
         ];
 
-        if ($this->accessToken) {
-            $guzzleConfig['headers']['Authorization'] = 'Bearer ' . $this->accessToken;
+        if ($this->apiKey) {
+            $guzzleConfig['headers']['X-Api-Key'] = $this->apiKey;
         }
 
         $this->client = new Client($guzzleConfig);
     }
 
-    public function setAccessToken($token)
+    public function setApiKey($key)
     {
-        $this->accessToken = $token;
-        // Re-initialize client to include new token
+        $this->apiKey = $key;
         $config = $this->client->getConfig();
-        $config['headers']['Authorization'] = 'Bearer ' . $token;
+        $config['headers']['X-Api-Key'] = $key;
         $this->client = new Client($config);
     }
 
@@ -50,14 +48,9 @@ class PaysgatorClient
         return $this->client;
     }
 
-    public function auth()
+    public function payments()
     {
-        return new Auth($this);
-    }
-
-    public function paymentLinks()
-    {
-        return new PaymentLinks($this);
+        return new Payments($this);
     }
 
     public function subscriptions()

@@ -14,7 +14,7 @@ class Transactions
     }
 
     /**
-     * Get Transaction Details
+     * Get Transaction
      *
      * @param string $id
      * @return array
