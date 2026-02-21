@@ -8,14 +8,14 @@ $client = new PaysgatorClient([
     'base_url' => 'https://paysgator.com/api/v1/', // Optional, defaults to production
 ]);
 
-$apiKey="";
-$walletId="";
+$apiKey = getenv('PAYSGATOR_API_KEY') ?: '';
+$walletId = getenv('PAYSGATOR_WALLET_ID') ?: '';
 
 // Authenticate to get a new token (automatically sets it on the client)
 $response = $client->auth()->authenticate($apiKey, $walletId);
 $token = $response['accessToken'];
 
-//Genrating a direct charge
+// Generating a direct charge
 
 $directCharge = $client->paymentLinks()->create([
     'amount' => 0.01,
@@ -30,5 +30,5 @@ $directCharge = $client->paymentLinks()->create([
     'confirm'=>true
 ]);
 
-print_r($directCharge);
+// print_r($directCharge); // Consider using logging instead
 

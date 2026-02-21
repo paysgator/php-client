@@ -3,7 +3,7 @@
 namespace Paysgator;
 
 use GuzzleHttp\Client;
-use GuzzleHttp\Exception\GuzzleException;
+
 use Paysgator\Resources\Payments;
 use Paysgator\Resources\Subscriptions;
 use Paysgator\Resources\Transactions;
