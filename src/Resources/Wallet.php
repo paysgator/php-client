@@ -3,6 +3,8 @@
 namespace Paysgator\Resources;
 
 use Paysgator\PaysgatorClient;
+use GuzzleHttp\Exception\GuzzleException;
+
 
 class Wallet
 {
@@ -20,8 +22,16 @@ class Wallet
      */
     public function getBalance()
     {
-        $response = $this->client->getHttpClient()->get('wallet/balance');
+        try {
+            $response = $this->client->getHttpClient()->get('wallet/balance');
 
-        return json_decode($response->getBody()->getContents(), true);
+            if ($response->getStatusCode() !== 200) {
+                throw new \RuntimeException('Failed to get wallet balance: ' . $response->getReasonPhrase());
+            }
+
+            return json_decode($response->getBody()->getContents(), true);
+        } catch (GuzzleException $e) {
+            throw new \RuntimeException('Wallet API error: ' . $e->getMessage(), $e->getCode(), $e);
+        }
     }
 }

@@ -3,6 +3,8 @@
 namespace Paysgator\Resources;
 
 use Paysgator\PaysgatorClient;
+use GuzzleHttp\Exception\RequestException;
+
 
 class Transactions
 {
@@ -21,8 +23,16 @@ class Transactions
      */
     public function get($id)
     {
-        $response = $this->client->getHttpClient()->get("transactions/{$id}");
+        try {
+            $response = $this->client->getHttpClient()->get("transactions/{$id}");
 
-        return json_decode($response->getBody()->getContents(), true);
+            if ($response->getStatusCode() >= 400) {
+                throw new RequestException('API Error', $response->getRequest(), $response);
+            }
+
+            return json_decode($response->getBody()->getContents(), true);
+        } catch (RequestException $e) {
+            throw $e;
+        }
     }
 }

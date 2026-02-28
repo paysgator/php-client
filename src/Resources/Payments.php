@@ -2,13 +2,12 @@
 
 namespace Paysgator\Resources;
 
-use Paysgator\PaysgatorClient;
 
 class Payments
 {
     private $client;
 
-    public function __construct(PaysgatorClient $client)
+    public function __construct($client)
     {
         $this->client = $client;
     }
@@ -21,11 +20,19 @@ class Payments
      */
     public function create(array $data)
     {
-        $response = $this->client->getHttpClient()->post('payment/create', [
-            'json' => $data,
-        ]);
+        try {
+            $response = $this->client->getHttpClient()->post('payment/create', [
+                'json' => $data,
+            ]);
 
-        return json_decode($response->getBody()->getContents(), true);
+            if ($response->getStatusCode() >= 400) {
+                throw new \Exception('API Error: ' . $response->getStatusCode());
+            }
+
+            return json_decode($response->getBody()->getContents(), true);
+        } catch (\Exception $e) {
+            throw $e;
+        }
     }
 
     /**
@@ -36,10 +43,18 @@ class Payments
      */
     public function confirm(array $data)
     {
-        $response = $this->client->getHttpClient()->post('payment/confirm', [
-            'json' => $data,
-        ]);
+        try {
+            $response = $this->client->getHttpClient()->post('payment/confirm', [
+                'json' => $data,
+            ]);
 
-        return json_decode($response->getBody()->getContents(), true);
+            if ($response->getStatusCode() >= 400) {
+                throw new \Exception('API Error: ' . $response->getStatusCode());
+            }
+
+            return json_decode($response->getBody()->getContents(), true);
+        } catch (\Exception $e) {
+            throw $e;
+        }
     }
 }
