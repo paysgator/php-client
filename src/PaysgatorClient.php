@@ -3,7 +3,6 @@
 namespace Paysgator;
 
 use GuzzleHttp\Client;
-use GuzzleHttp\Exception\GuzzleException;
 use Paysgator\Resources\Payments;
 use Paysgator\Resources\Subscriptions;
 use Paysgator\Resources\Transactions;
@@ -11,14 +10,18 @@ use Paysgator\Resources\Wallet;
 
 class PaysgatorClient
 {
-    private $client;
-    private $apiKey;
-    private $baseUrl = 'https://paysgator.com/api/v1/';
+    private Client $client;
+    private ?string $apiKey = null;
+    private string $baseUrl = 'https://paysgator.com/api/v1/';
 
     public function __construct(array $config = [])
     {
         $this->baseUrl = $config['base_url'] ?? $this->baseUrl;
-        $this->apiKey = $config['api_key'] ?? null;
+        $apiKey = $config['api_key'] ?? null;
+        if ($apiKey !== null && !is_string($apiKey)) {
+            throw new \InvalidArgumentException('API Key must be a string');
+        }
+        $this->apiKey = $apiKey;
 
         $guzzleConfig = [
             'base_uri' => $this->baseUrl,
@@ -35,35 +38,38 @@ class PaysgatorClient
         $this->client = new Client($guzzleConfig);
     }
 
-    public function setApiKey($key)
+    public function setApiKey(string $key)
     {
+        if ($key === '') {
+            throw new \InvalidArgumentException('API Key must be a non-empty string');
+        }
         $this->apiKey = $key;
         $config = $this->client->getConfig();
         $config['headers']['X-Api-Key'] = $key;
         $this->client = new Client($config);
     }
 
-    public function getHttpClient()
+    public function getHttpClient(): Client
     {
         return $this->client;
     }
 
-    public function payments()
+    public function payments(): Payments
     {
         return new Payments($this);
     }
 
-    public function subscriptions()
+    public function subscriptions(): Subscriptions
     {
         return new Subscriptions($this);
     }
 
-    public function transactions()
+    public function transactions(): Transactions
     {
         return new Transactions($this);
     }
 
-    public function wallet()
+    public function wallet(): Wallet
     {
         return new Wallet($this);
     }
