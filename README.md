@@ -16,13 +16,17 @@ composer require paysgator/paysgator-php
 
 For most requests, you simply need to provide your API Key.
 
+> **Security:** Never hardcode API keys. Use environment variables.
+> **Error Handling:** All API calls throw exceptions. Wrap requests in try-catch blocks.
+
+
 ```php
 require 'vendor/autoload.php';
 
 use Paysgator\PaysgatorClient;
 
 $client = new PaysgatorClient([
-    'api_key' => 'YOUR_API_KEY',
+    'api_key' => getenv('PAYSGATOR_API_KEY'),
 ]);
 ```
 
