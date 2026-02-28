@@ -8,8 +8,15 @@ $client = new PaysgatorClient([
     'base_url' => 'https://paysgator.com/api/v1/', // Optional, defaults to production
 ]);
 
-$apiKey="";
-$walletId="";
+$apiKey = getenv('PAYSGATOR_API_KEY') ?: '';
+$walletId = getenv('PAYSGATOR_WALLET_ID') ?: '';
+
+if (empty($apiKey) || empty($walletId)) {
+    die('Error: Missing credentials. Set PAYSGATOR_API_KEY and PAYSGATOR_WALLET_ID environment variables.');
+}
+
+
+try {
 
 // Authenticate to get a new token (automatically sets it on the client)
 $response = $client->auth()->authenticate($apiKey, $walletId);
@@ -31,4 +38,9 @@ $directCharge = $client->paymentLinks()->create([
 ]);
 
 print_r($directCharge);
+} catch (\Exception $e) {
+    error_log('Payment error: ' . $e->getMessage());
+    echo 'An error occurred: ' . $e->getMessage();
+}
+
 

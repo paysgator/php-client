@@ -3,6 +3,10 @@
 namespace Paysgator\Resources;
 
 use Paysgator\PaysgatorClient;
+use Exception;
+use InvalidArgumentException;
+use RuntimeException;
+
 
 class Transactions
 {
@@ -21,7 +25,15 @@ class Transactions
      */
     public function get($id)
     {
-        $response = $this->client->getHttpClient()->get("transactions/{$id}");
+        if (empty($id) || !is_string($id)) {
+            throw new InvalidArgumentException('Transaction ID must be a non-empty string');
+        }
+
+        try {
+            $response = $this->client->getHttpClient()->get("transactions/{$id}");
+        } catch (Exception $e) {
+            throw new RuntimeException('Failed to fetch transaction: ' . $e->getMessage(), 0, $e);
+        }
 
         return json_decode($response->getBody()->getContents(), true);
     }

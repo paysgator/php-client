@@ -3,6 +3,7 @@
 namespace Paysgator\Resources;
 
 use Paysgator\PaysgatorClient;
+use Exception;
 
 class Payments
 {
@@ -21,11 +22,18 @@ class Payments
      */
     public function create(array $data)
     {
-        $response = $this->client->getHttpClient()->post('payment/create', [
-            'json' => $data,
-        ]);
+        if (empty($data)) {
+            throw new Exception('Payment data cannot be empty');
+        }
+        try {
+            $response = $this->client->getHttpClient()->post('payment/create', [
+                'json' => $data,
+            ]);
 
-        return json_decode($response->getBody()->getContents(), true);
+            return json_decode($response->getBody()->getContents(), true);
+        } catch (Exception $e) {
+            throw new Exception('Failed to create payment: ' . $e->getMessage(), $e->getCode(), $e);
+        }
     }
 
     /**
@@ -36,10 +44,17 @@ class Payments
      */
     public function confirm(array $data)
     {
-        $response = $this->client->getHttpClient()->post('payment/confirm', [
-            'json' => $data,
-        ]);
+        if (empty($data)) {
+            throw new Exception('Payment data cannot be empty');
+        }
+        try {
+            $response = $this->client->getHttpClient()->post('payment/confirm', [
+                'json' => $data,
+            ]);
 
-        return json_decode($response->getBody()->getContents(), true);
+            return json_decode($response->getBody()->getContents(), true);
+        } catch (Exception $e) {
+            throw new Exception('Failed to confirm payment: ' . $e->getMessage(), $e->getCode(), $e);
+        }
     }
 }
