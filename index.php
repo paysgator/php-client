@@ -8,10 +8,12 @@ $client = new PaysgatorClient([
     'base_url' => 'https://paysgator.com/api/v1/', // Optional, defaults to production
 ]);
 
-$apiKey="";
-$walletId="";
+$apiKey = getenv('PAYSGATOR_API_KEY') ?: '';
+$walletId = getenv('PAYSGATOR_WALLET_ID') ?: '';
 
 // Authenticate to get a new token (automatically sets it on the client)
+try {
+
 $response = $client->auth()->authenticate($apiKey, $walletId);
 $token = $response['accessToken'];
 
@@ -31,4 +33,9 @@ $directCharge = $client->paymentLinks()->create([
 ]);
 
 print_r($directCharge);
+} catch (\Exception $e) {
+    error_log($e->getMessage());
+    echo 'An error occurred: ' . $e->getMessage();
+}
+
 
