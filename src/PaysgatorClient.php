@@ -3,7 +3,6 @@
 namespace Paysgator;
 
 use GuzzleHttp\Client;
-use GuzzleHttp\Exception\GuzzleException;
 use Paysgator\Resources\Payments;
 use Paysgator\Resources\Subscriptions;
 use Paysgator\Resources\Transactions;
@@ -37,7 +36,11 @@ class PaysgatorClient
 
     public function setApiKey($key)
     {
+        if ($this->apiKey === $key) {
+            return;
+        }
         $this->apiKey = $key;
+
         $config = $this->client->getConfig();
         $config['headers']['X-Api-Key'] = $key;
         $this->client = new Client($config);
