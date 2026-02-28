@@ -22,10 +22,25 @@ class Subscriptions
      */
     public function update($id, $action)
     {
-        $response = $this->client->getHttpClient()->patch("subscriptions/{$id}", [
-            'json' => ['action' => $action],
-        ]);
+        if (empty($id) || !is_string($id)) {
+            throw new \InvalidArgumentException('Subscription ID is required.');
+        }
+        if (empty($action) || !is_string($action)) {
+            throw new \InvalidArgumentException('Action is required.');
+        }
 
-        return json_decode($response->getBody()->getContents(), true);
+        try {
+            $response = $this->client->getHttpClient()->patch("subscriptions/{$id}", [
+                'json' => ['action' => $action],
+            ]);
+
+            if ($response->getStatusCode() >= 400) {
+                throw new \RuntimeException('API request failed: ' . $response->getReasonPhrase());
+            }
+
+            return json_decode($response->getBody()->getContents(), true);
+        } catch (\Exception $e) {
+            throw new \RuntimeException('Failed to update subscription: ' . $e->getMessage(), 0, $e);
+        }
     }
 }
