@@ -14,7 +14,12 @@ composer require paysgator/paysgator-php
 
 ### Configuration
 
-For most requests, you simply need to provide your API Key.
+For most requests, you should load your API Key from environment variables for security:
+
+```bash
+# .env file
+PAYSgATOR_API_KEY=your_actual_api_key_here
+```
 
 ```php
 require 'vendor/autoload.php';
