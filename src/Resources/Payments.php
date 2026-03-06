@@ -3,6 +3,8 @@
 namespace Paysgator\Resources;
 
 use Paysgator\PaysgatorClient;
+use GuzzleHttp\Exception\GuzzleException;
+use InvalidArgumentException;
 
 class Payments
 {
@@ -19,7 +21,7 @@ class Payments
      * @param array $data
      * @return array
      */
-    public function create(array $data)
+    public function create(array $data): array
     {
         $response = $this->client->getHttpClient()->post('payment/create', [
             'json' => $data,
@@ -34,7 +36,7 @@ class Payments
      * @param array $data
      * @return array
      */
-    public function confirm(array $data)
+    public function confirm(array $data): array
     {
         $response = $this->client->getHttpClient()->post('payment/confirm', [
             'json' => $data,
